@@ -1,8 +1,7 @@
-const { validationResult } = require('express-validator');  // Tambahkan ini
-const db = require('../config/db');  // Koneksi database
+const { validationResult } = require('express-validator');  
+const db = require('../config/db'); 
 
 exports.createOrUpdatePungutan = (req, res) => {
-  // Validasi request
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -14,12 +13,10 @@ exports.createOrUpdatePungutan = (req, res) => {
     voluntary_declaration, asuransi, freight, bruto, netto, flag_kontainer
   } = req.body.pungutan;
 
-  // Lakukan perhitungan ulang
   const nilai_fob = nilai + biaya_tambahan - biaya_pengurangan + voluntary_declaration;
   const cif = nilai_fob + asuransi + freight;
   const cif_rp = cif * kurs;
 
-  // Jika tidak ada primary key, lakukan insert baru
   const insertQuery = `INSERT INTO header (no_pengajuan, nama_pengaju, tgl_pengajuan) VALUES (?, ?, ?)`;
   db.query(insertQuery, [no_pengajuan, nama_pengaju, tgl_pengajuan], (err, result) => {
     if (err) {
